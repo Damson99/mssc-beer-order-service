@@ -45,7 +45,6 @@ public class BeerOrderServiceImpl implements BeerOrderService {
     private final BeerOrderRepository beerOrderRepository;
     private final CustomerRepository customerRepository;
     private final BeerOrderMapper beerOrderMapper;
-    private final BeerOrderManager beerOrderManager;
 
     @Override
     public BeerOrderPagedList listOrders(UUID customerId, Pageable pageable) {
@@ -69,22 +68,20 @@ public class BeerOrderServiceImpl implements BeerOrderService {
 
     @Transactional
     @Override
-    public BeerOrderDto placeOrder(UUID customerId, BeerOrderDto beerOrderDto) {
+    public BeerOrderDto placeOrder(UUID customerId, BeerOrderDto beerOrderDto)
+    {
         Optional<Customer> customerOptional = customerRepository.findById(customerId);
 
-        if (customerOptional.isPresent()) {
+        if (customerOptional.isPresent())
+        {
             BeerOrder beerOrder = beerOrderMapper.dtoToBeerOrder(beerOrderDto);
             beerOrder.setId(null); //should not be set by outside client
             beerOrder.setCustomer(customerOptional.get());
             beerOrder.setOrderStatus(BeerOrderStatusEnum.NEW);
-
             beerOrder.getBeerOrderLines().forEach(line -> line.setBeerOrder(beerOrder));
 
-            BeerOrder savedBeerOrder = beerOrderManager.newBeerOrder(beerOrder);
-
             log.debug("Saved Beer Order: " + beerOrder.getId());
-
-            return beerOrderMapper.beerOrderToDto(savedBeerOrder);
+            return null;
         }
         //todo add exception type
         throw new RuntimeException("Customer Not Found");
@@ -97,7 +94,7 @@ public class BeerOrderServiceImpl implements BeerOrderService {
 
     @Override
     public void pickupOrder(UUID customerId, UUID orderId) {
-        beerOrderManager.beerOrderPickedUp(orderId);
+
     }
 
     private BeerOrder getOrder(UUID customerId, UUID orderId){

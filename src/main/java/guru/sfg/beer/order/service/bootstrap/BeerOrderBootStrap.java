@@ -24,7 +24,8 @@ public class BeerOrderBootStrap implements CommandLineRunner {
     private final CustomerRepository customerRepository;
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args)
+    {
         loadCustomerData();
     }
 

@@ -5,10 +5,11 @@ import guru.sfg.brewery.model.BeerOrderLineDto;
 import org.mapstruct.DecoratedWith;
 import org.mapstruct.Mapper;
 
-@Mapper(uses = {DateMapper.class})
+@Mapper(uses = DateMapper.class)
 @DecoratedWith(BeerOrderLineMapperDecorator.class)
-public interface BeerOrderLineMapper {
-    BeerOrderLineDto beerOrderLineToDto(BeerOrderLine line);
+public interface BeerOrderLineMapper
+{
+    BeerOrderLine dtoToBeerOrderLine(BeerOrderLineDto beerOrderLineDto);
 
-    BeerOrderLine dtoToBeerOrderLine(BeerOrderLineDto dto);
+    BeerOrderLineDto beerOrderLineToDto(BeerOrderLine beerOrderLine);
 }
