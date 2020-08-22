@@ -9,33 +9,28 @@
         <version>1.0.17</version>
     </parent>
 
-    <groupId>guru.springframework</groupId>
-
+    <groupId>order.service</groupId>
     <artifactId>mssc-beer-order-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-
     <name>mssc-beer-order-service</name>
-
     <description>MSSC Beer Order Service</description>
 
     <dependencies>
         <dependency>
-            <groupId>com.github.JensPiegsa</groupId>
-            <artifactId>wiremock-extension</artifactId>
-            <version>0.4.0</version>
-            <scope>test</scope>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.1</version>
         </dependency>
         <dependency>
-            <groupId>org.awaitility</groupId>
-            <artifactId>awaitility</artifactId>
-            <scope>test</scope>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-core</artifactId>
+            <version>2.3.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>2.3.3</version>
         </dependency>
     </dependencies>
 
-    <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
 </project>
