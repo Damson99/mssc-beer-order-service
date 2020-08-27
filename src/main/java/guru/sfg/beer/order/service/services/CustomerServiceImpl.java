@@ -13,28 +13,21 @@ import org.springframework.stereotype.Service;
 
 import java.util.stream.Collectors;
 
-/**
- * Created by jt on 3/7/20.
- */
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CustomerServiceImpl implements CustomerService {
+public class CustomerServiceImpl implements CustomerService
+{
 
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
 
     @Override
-    public CustomerPagedList listCustomers(Pageable pageable) {
-
+    public CustomerPagedList listCustomers(Pageable pageable)
+    {
         Page<Customer> customerPage = customerRepository.findAll(pageable);
-
-        return new CustomerPagedList(customerPage
-                        .stream()
-                        .map(customerMapper::customerToDto)
-                        .collect(Collectors.toList()),
-                    PageRequest.of(customerPage.getPageable().getPageNumber(),
-                        customerPage.getPageable().getPageSize()),
-                        customerPage.getTotalElements());
+        return new CustomerPagedList(customerPage.stream().map(customerMapper::customerToDto).collect(Collectors.toList()),
+                    PageRequest.of(customerPage.getPageable().getPageNumber(), customerPage.getPageable().getPageSize()),
+                    customerPage.getTotalElements());
     }
 }

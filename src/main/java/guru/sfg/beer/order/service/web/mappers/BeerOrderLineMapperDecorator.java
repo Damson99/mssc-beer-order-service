@@ -20,7 +20,7 @@ public abstract class BeerOrderLineMapperDecorator implements BeerOrderLineMappe
     }
 
     @Autowired
-    @Qualifier("delegate")
+//    @Qualifier("delegate")
     public void setBeerOrderLineMapper(BeerOrderLineMapper beerOrderLineMapper)
     {
         this.beerOrderLineMapper = beerOrderLineMapper;
