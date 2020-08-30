@@ -14,12 +14,14 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @Entity
-public class BeerOrderLine extends BaseEntity {
+public class BeerOrderLine extends BaseEntity
+{
 
     @Builder
     public BeerOrderLine(UUID id, Long version, Timestamp createdDate, Timestamp lastModifiedDate,
                          BeerOrder beerOrder, UUID beerId, String upc, Integer orderQuantity,
-                         Integer quantityAllocated) {
+                         Integer quantityAllocated)
+    {
         super(id, version, createdDate, lastModifiedDate);
         this.beerOrder = beerOrder;
         this.beerId = beerId;
