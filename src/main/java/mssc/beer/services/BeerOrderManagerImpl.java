@@ -11,6 +11,7 @@ import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.config.StateMachineFactory;
 import org.springframework.statemachine.support.DefaultStateMachineContext;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +23,7 @@ public class BeerOrderManagerImpl implements BeerOrderManager
     private final BeerOrderStateChangeInterceptor interceptor;
 
     @Override
+    @Transactional
     public BeerOrder newBeerOrder(BeerOrder beerOrder)
     {
         beerOrder.setId(null);

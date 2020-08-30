@@ -2,12 +2,16 @@ package mssc.beer.sm;
 
 import mssc.beer.domain.BeerOrderEventEnum;
 import mssc.beer.domain.BeerOrderStatusEnum;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.statemachine.config.EnableStateMachineFactory;
 import org.springframework.statemachine.config.StateMachineConfigurerAdapter;
 import org.springframework.statemachine.config.builders.StateMachineStateConfigurer;
 import org.springframework.statemachine.config.builders.StateMachineTransitionConfigurer;
 
 import java.util.EnumSet;
 
+@Configuration
+@EnableStateMachineFactory
 public class BeerOrderStateMachineConfig extends StateMachineConfigurerAdapter<BeerOrderStatusEnum, BeerOrderEventEnum>
 {
 
@@ -28,7 +32,7 @@ public class BeerOrderStateMachineConfig extends StateMachineConfigurerAdapter<B
     {
 //        todo add validation
         transitions.withExternal()
-                    .source(BeerOrderStatusEnum.NEW).target(BeerOrderStatusEnum.NEW)
+                    .source(BeerOrderStatusEnum.NEW).target(BeerOrderStatusEnum.VALIDATION_PENDING)
                     .event(BeerOrderEventEnum.VALIDATE_ORDER)
                 .and().withExternal()
                     .source(BeerOrderStatusEnum.NEW).target(BeerOrderStatusEnum.VALIDATED)
