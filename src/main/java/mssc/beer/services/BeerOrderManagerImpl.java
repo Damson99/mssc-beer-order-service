@@ -5,6 +5,7 @@ import mssc.beer.domain.BeerOrder;
 import mssc.beer.domain.BeerOrderEventEnum;
 import mssc.beer.domain.BeerOrderStatusEnum;
 import mssc.beer.repositories.BeerOrderRepository;
+import mssc.beer.sm.BeerOrderStateChangeInterceptor;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.statemachine.StateMachine;

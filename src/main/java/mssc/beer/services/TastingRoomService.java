@@ -20,7 +20,6 @@ import java.util.UUID;
 @Slf4j
 public class TastingRoomService
 {
-
     private final CustomerRepository customerRepository;
     private final BeerOrderService beerOrderService;
     private final BeerOrderRepository beerOrderRepository;

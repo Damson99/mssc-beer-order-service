@@ -1,4 +1,4 @@
-package mssc.beer.services;
+package mssc.beer.sm;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -6,6 +6,7 @@ import mssc.beer.domain.BeerOrder;
 import mssc.beer.domain.BeerOrderEventEnum;
 import mssc.beer.domain.BeerOrderStatusEnum;
 import mssc.beer.repositories.BeerOrderRepository;
+import mssc.beer.services.BeerOrderManagerImpl;
 import org.springframework.messaging.Message;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.state.State;
