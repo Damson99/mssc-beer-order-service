@@ -14,6 +14,8 @@ import org.springframework.statemachine.support.DefaultStateMachineContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class BeerOrderManagerImpl implements BeerOrderManager
@@ -35,6 +37,16 @@ public class BeerOrderManagerImpl implements BeerOrderManager
         return savedBeerOrder;
     }
 
+    @Override
+    public void processValidation(UUID id, Boolean isValid)
+    {
+        BeerOrder beerOrder = beerOrderRepository.getOne(id);
+        if(isValid)
+            sendBeerOrderEvent(beerOrder, BeerOrderEventEnum.VALIDATION_PASSED);
+        else
+            sendBeerOrderEvent(beerOrder, BeerOrderEventEnum.VALIDATION_FAILED);
+    }
+
     private void sendBeerOrderEvent(BeerOrder beerOrder, BeerOrderEventEnum eventEnum)
     {
         StateMachine<BeerOrderStatusEnum, BeerOrderEventEnum> stateMachine = build(beerOrder);
@@ -45,6 +57,8 @@ public class BeerOrderManagerImpl implements BeerOrderManager
         stateMachine.sendEvent(message);
     }
 
+
+
     private StateMachine<BeerOrderStatusEnum, BeerOrderEventEnum> build(BeerOrder beerOrder)
     {
         StateMachine<BeerOrderStatusEnum, BeerOrderEventEnum> stateMachine = stateMachineFactory.getStateMachine(beerOrder.getId());
@@ -52,11 +66,11 @@ public class BeerOrderManagerImpl implements BeerOrderManager
         stateMachine.stop();
         stateMachine.getStateMachineAccessor()
                 .doWithAllRegions(stateMachineAccessor ->
-                        {
-                            stateMachineAccessor.addStateMachineInterceptor(interceptor);
-                            stateMachineAccessor.resetStateMachine(new DefaultStateMachineContext<>(beerOrder.getOrderStatus(),
-                                    null, null, null));
-                        });
+                {
+                    stateMachineAccessor.addStateMachineInterceptor(interceptor);
+                    stateMachineAccessor.resetStateMachine(new DefaultStateMachineContext<>(beerOrder.getOrderStatus(),
+                            null, null, null));
+                });
         stateMachine.start();
 
         return stateMachine;
