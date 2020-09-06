@@ -9,19 +9,24 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Optional;
 import java.util.UUID;
 
-@ConfigurationProperties(prefix = "sfg.brewery.beer-service-host", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "mssc.brewery", ignoreUnknownFields = false)
 @Service
 public class BeerServiceImpl implements BeerService
 {
     private final RestTemplate restTemplate;
     private String beerServiceHost;
 
-    public final String BEER_PATH_V1 = "/api/v1/beer/";
-    public final String BEER_UPC_PATH_V1 = "/api/v1/beerUpc/";
+    public final static String BEER_PATH_V1 = "/api/v1/beer/";
+    public final static String BEER_UPC_PATH_V1 = "/api/v1/beerUpc/";
 
     public BeerServiceImpl(RestTemplateBuilder restTemplateBuilder)
     {
         this.restTemplate = restTemplateBuilder.build();
+    }
+
+    public void setBeerServiceHost(String beerServiceHost)
+    {
+        this.beerServiceHost = beerServiceHost;
     }
 
     @Override
