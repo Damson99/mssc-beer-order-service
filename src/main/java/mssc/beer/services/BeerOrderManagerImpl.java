@@ -36,14 +36,17 @@ public class BeerOrderManagerImpl implements BeerOrderManager
         beerOrder.setId(null);
         beerOrder.setOrderStatus(BeerOrderStatusEnum.NEW);
 
-        BeerOrder savedBeerOrder = beerOrderRepository.save(beerOrder);
+        BeerOrder savedBeerOrder = beerOrderRepository.saveAndFlush(beerOrder);
         sendBeerOrderEvent(savedBeerOrder, BeerOrderEventEnum.VALIDATE_ORDER);
         return savedBeerOrder;
     }
 
     @Override
+    @Transactional
     public void processValidation(UUID id, Boolean isValid)
     {
+        log.debug("Process Validation Result for beerOrderId: " + id + " Valid? " + isValid);
+
         Optional<BeerOrder> beerOrderOptional = beerOrderRepository.findById(id);
         beerOrderOptional.ifPresentOrElse(beerOrder ->
         {
@@ -66,8 +69,19 @@ public class BeerOrderManagerImpl implements BeerOrderManager
         beerOrderOptional.ifPresentOrElse(beerOrder ->
         {
             sendBeerOrderEvent(beerOrder, BeerOrderEventEnum.ALLOCATION_SUCCESS);
-            updateAllocateQuantity(beerOrderDto, beerOrder);
+            updateAllocatedQuantity(beerOrderDto, beerOrder);
         }, () -> log.error("Order not found. Id: " + beerOrderDto.getId()));
+    }
+
+    @Override
+    public void beerOrderPickedUp(UUID id)
+    {
+        Optional<BeerOrder> beerOrderOptional = beerOrderRepository.findById(id);
+        beerOrderOptional.ifPresentOrElse(beerOrder ->
+        {
+            sendBeerOrderEvent(beerOrder, BeerOrderEventEnum.BEER_ORDER_PICKED_UP);
+
+        }, () -> log.error("Order not found. Id: " + id));
     }
 
     @Override
@@ -77,11 +91,11 @@ public class BeerOrderManagerImpl implements BeerOrderManager
         beerOrderOptional.ifPresentOrElse(beerOrder ->
         {
             sendBeerOrderEvent(beerOrder, BeerOrderEventEnum.ALLOCATION_NO_INVENTORY);
-            updateAllocateQuantity(beerOrderDto, beerOrder);
+            updateAllocatedQuantity(beerOrderDto, beerOrder);
         }, () -> log.error("Order not found. Id: " + beerOrderDto.getId()));
     }
 
-    private void updateAllocateQuantity(BeerOrderDto beerOrderDto, BeerOrder beerOrder)
+    private void updateAllocatedQuantity(BeerOrderDto beerOrderDto, BeerOrder beerOrder)
     {
         Optional<BeerOrder> allocatedOrderOptional = beerOrderRepository.findById(beerOrderDto.getId());
         allocatedOrderOptional.ifPresentOrElse(allocatedOrder ->
@@ -92,7 +106,7 @@ public class BeerOrderManagerImpl implements BeerOrderManager
                         if(beerOrderDto.getId().equals(beerOrder.getId()))
                             beerOrderLine.setOrderQuantity(beerOrderLineDto.getOrderQuantity());
                     }));
-            beerOrderRepository.saveAndFlush(beerOrder);
+            beerOrderRepository.saveAndFlush(allocatedOrder);
         }, () -> log.error("Order not found. Id: " + beerOrder.getId()));
     }
 

@@ -7,12 +7,10 @@ import lombok.NoArgsConstructor;
 import mssc.model.BeerOrderDto;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class AllocationOrderResult
+public class ValidateOrderRequest
 {
     private BeerOrderDto beerOrderDto;
-    private Boolean allocationError = false;
-    private Boolean pendingInventory = false;
 }

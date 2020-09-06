@@ -9,7 +9,7 @@ import mssc.beer.domain.BeerOrderStatusEnum;
 import mssc.beer.repositories.BeerOrderRepository;
 import mssc.beer.services.BeerOrderManagerImpl;
 import mssc.beer.web.mappers.BeerOrderMapper;
-import mssc.model.event.ValidateBeerOrderRequest;
+import mssc.model.event.ValidateOrderRequest;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
@@ -31,13 +31,13 @@ public class ValidateOrderAction implements Action<BeerOrderStatusEnum, BeerOrde
     public void execute(StateContext<BeerOrderStatusEnum, BeerOrderEventEnum> stateContext)
     {
         String beerOrderId = (String) stateContext.getMessage().getHeaders().get(BeerOrderManagerImpl.ORDER_ID_HEADER);
-        Optional<BeerOrder> beerOrder = beerOrderRepository.findById(UUID.fromString(beerOrderId));
+        Optional<BeerOrder> beerOrderOptional = beerOrderRepository.findById(UUID.fromString(beerOrderId));
 
-        beerOrder.ifPresentOrElse(beerOrderOptional ->
+        beerOrderOptional.ifPresentOrElse(beerOrder ->
         {
             jmsTemplate.convertAndSend(JmsConfig.VALIDATE_ORDER_QUEUE,
-                    ValidateBeerOrderRequest.builder()
-                    .beerOrderDto(beerOrderMapper.beerOrderToDto(beerOrderOptional))
+                    ValidateOrderRequest.builder()
+                    .beerOrderDto(beerOrderMapper.beerOrderToDto(beerOrder))
                     .build());
         }, () -> log.error("Order not found. Id: " + beerOrderId));
 

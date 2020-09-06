@@ -9,6 +9,7 @@ import mssc.beer.domain.BeerOrderStatusEnum;
 import mssc.beer.repositories.BeerOrderRepository;
 import mssc.beer.services.BeerOrderManagerImpl;
 import mssc.beer.web.mappers.BeerOrderMapper;
+import mssc.model.event.AllocateOrderRequest;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
@@ -33,7 +34,11 @@ public class AllocateOrderAction implements Action<BeerOrderStatusEnum, BeerOrde
         Optional<BeerOrder> beerOrderOptional = beerOrderRepository.findById(UUID.fromString(beerOrderId));
         beerOrderOptional.ifPresentOrElse(beerOrder ->
         {
-            jmsTemplate.convertAndSend(JmsConfig.ALLOCATE_ORDER_QUEUE, beerOrderMapper.beerOrderToDto(beerOrder));
+            jmsTemplate.convertAndSend(JmsConfig.ALLOCATE_ORDER_QUEUE,
+                    AllocateOrderRequest.builder()
+                            .beerOrderDto(beerOrderMapper.beerOrderToDto(beerOrder))
+                            .build());
+
             log.debug("Sent allocation request for orderId:" + beerOrderId);
         }, () -> log.error("Order not found. Id: " + beerOrderId));
     }

@@ -1,12 +1,9 @@
 package mssc.beer.sm;
 
 import lombok.RequiredArgsConstructor;
-import mssc.beer.config.JmsConfig;
 import mssc.beer.domain.BeerOrderEventEnum;
 import mssc.beer.domain.BeerOrderStatusEnum;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.config.EnableStateMachineFactory;
 import org.springframework.statemachine.config.StateMachineConfigurerAdapter;
@@ -20,7 +17,6 @@ import java.util.EnumSet;
 @RequiredArgsConstructor
 public class BeerOrderStateMachineConfig extends StateMachineConfigurerAdapter<BeerOrderStatusEnum, BeerOrderEventEnum>
 {
-    private final JmsTemplate jmsTemplate;
     private final Action<BeerOrderStatusEnum, BeerOrderEventEnum> validateOrderAction;
     private final Action<BeerOrderStatusEnum, BeerOrderEventEnum> allocateOrderAction;
 
@@ -61,6 +57,9 @@ public class BeerOrderStateMachineConfig extends StateMachineConfigurerAdapter<B
                     .event(BeerOrderEventEnum.ALLOCATION_FAILED)
                 .and().withExternal()
                     .source(BeerOrderStatusEnum.ALLOCATION_PENDING).target(BeerOrderStatusEnum.PENDING_INVENTORY)
-                    .event(BeerOrderEventEnum.ALLOCATION_NO_INVENTORY);
+                    .event(BeerOrderEventEnum.ALLOCATION_NO_INVENTORY)
+                .and().withExternal()
+                    .source(BeerOrderStatusEnum.ALLOCATED).target(BeerOrderStatusEnum.PICKED_UP)
+                    .event(BeerOrderEventEnum.BEER_ORDER_PICKED_UP);
     }
 }
