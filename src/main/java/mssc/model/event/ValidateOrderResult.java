@@ -13,6 +13,6 @@ import java.util.UUID;
 @Builder
 public class ValidateOrderResult
 {
-    private UUID id;
+    private UUID orderId;
     private Boolean isValid;
 }

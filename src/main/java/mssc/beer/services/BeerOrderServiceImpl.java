@@ -29,6 +29,7 @@ public class BeerOrderServiceImpl implements BeerOrderService
     private final BeerOrderRepository beerOrderRepository;
     private final CustomerRepository customerRepository;
     private final BeerOrderMapper beerOrderMapper;
+    private final BeerOrderManager beerOrderManager;
 
     @Override
     public BeerOrderPagedList listOrders(UUID customerId, Pageable pageable) {
@@ -64,8 +65,10 @@ public class BeerOrderServiceImpl implements BeerOrderService
             beerOrder.setOrderStatus(BeerOrderStatusEnum.NEW);
             beerOrder.getBeerOrderLines().forEach(line -> line.setBeerOrder(beerOrder));
 
+            BeerOrder savedBeerOrder = beerOrderManager.newBeerOrder(beerOrder);
             log.debug("Saved Beer Order: " + beerOrder.getId());
-            return null;
+
+            return beerOrderMapper.beerOrderToDto(savedBeerOrder);
         }
         //todo add exception type
         throw new RuntimeException("Customer Not Found");
@@ -77,8 +80,9 @@ public class BeerOrderServiceImpl implements BeerOrderService
     }
 
     @Override
-    public void pickupOrder(UUID customerId, UUID orderId) {
-
+    public void pickupOrder(UUID customerId, UUID orderId)
+    {
+        beerOrderManager.beerOrderPickedUp(orderId);
     }
 
     private BeerOrder getOrder(UUID customerId, UUID orderId)
