@@ -40,7 +40,7 @@ public class DeallocateOrderAction implements Action<BeerOrderStatusEnum, BeerOr
                             .beerOrderDto(beerOrderMapper.beerOrderToDto(beerOrder)).build());
 
             log.debug("Sent deallocation request for orderId: " + orderId);
-        }, () -> log.debug("Order not found. Id: " + orderId));
+        }, () -> log.error("Order not found. Id: " + orderId));
     }
 }
 

@@ -46,9 +46,9 @@ public class BeerOrderServiceImpl implements BeerOrderService
                     beerOrderPage.getPageable().getPageNumber(),
                     beerOrderPage.getPageable().getPageSize()),
                     beerOrderPage.getTotalElements());
-        } else {
-            return null;
         }
+        else
+            return null;
     }
 
     @Transactional
