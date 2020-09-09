@@ -28,12 +28,24 @@ public class BeerOrderAllocationListener
         AllocateOrderRequest request = message.getPayload();
         boolean allocationError = false;
         boolean pendingInventory = false;
+        boolean sendResponse = true;
 
-        if(request.getBeerOrderDto().getCustomerRef() != null && request.getBeerOrderDto().getCustomerRef().equals("allocation-failed"))
-            allocationError = true;
+        if(request.getBeerOrderDto().getCustomerRef() != null)
+        {
+            switch (request.getBeerOrderDto().getCustomerRef())
+            {
+                case "allocation-failed":
+                    allocationError = true;
+                    break;
+                case "partial-allocation":
+                    pendingInventory = true;
+                    break;
+                case "dont-allocate":
+                    sendResponse = false;
+                    break;
+            }
+        }
 
-        if(request.getBeerOrderDto().getCustomerRef() != null && request.getBeerOrderDto().getCustomerRef().equals("partial-allocation"))
-            pendingInventory = true;
 
         boolean finalPendingInventory = pendingInventory;
             request.getBeerOrderDto().getBeerOrderLines()
@@ -45,11 +57,14 @@ public class BeerOrderAllocationListener
                                 beerOrderLineDto.setQuantityAllocated(beerOrderLineDto.getOrderQuantity());
                         });
 
-        jmsTemplate.convertAndSend(JmsConfig.VALIDATE_ORDER_RESPONSE_QUEUE,
-                AllocateOrderResult.builder()
-                .allocationError(allocationError)
-                .pendingInventory(pendingInventory)
-                .beerOrderDto(request.getBeerOrderDto())
-                .build());
+        if(sendResponse)
+        {
+            jmsTemplate.convertAndSend(JmsConfig.ALLOCATE_ORDER_RESPONSE_QUEUE,
+                    AllocateOrderResult.builder()
+                            .allocationError(allocationError)
+                            .pendingInventory(pendingInventory)
+                            .beerOrderDto(request.getBeerOrderDto())
+                            .build());
+        }
     }
 }

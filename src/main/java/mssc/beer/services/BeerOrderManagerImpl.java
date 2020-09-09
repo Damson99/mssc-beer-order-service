@@ -16,6 +16,7 @@ import org.springframework.statemachine.support.DefaultStateMachineContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,6 +29,7 @@ public class BeerOrderManagerImpl implements BeerOrderManager
     private final StateMachineFactory<BeerOrderStatusEnum, BeerOrderEventEnum> stateMachineFactory;
     private final BeerOrderRepository beerOrderRepository;
     private final BeerOrderStateChangeInterceptor interceptor;
+    private final EntityManager entityManager;
 
     @Override
     @Transactional
@@ -46,9 +48,9 @@ public class BeerOrderManagerImpl implements BeerOrderManager
     public void processValidation(UUID id, Boolean isValid)
     {
         log.debug("Process Validation Result for beerOrderId: " + id + " Valid? " + isValid);
+        entityManager.flush();
 
-        Optional<BeerOrder> beerOrderOptional = beerOrderRepository.findById(id);
-        beerOrderOptional.ifPresentOrElse(beerOrder ->
+        beerOrderRepository.findById(id).ifPresentOrElse(beerOrder ->
         {
             if(isValid)
             {
@@ -74,8 +76,7 @@ public class BeerOrderManagerImpl implements BeerOrderManager
     @Override
     public void beerOrderAllocationPassed(BeerOrderDto beerOrderDto)
     {
-        Optional<BeerOrder> beerOrderOptional = beerOrderRepository.findById(beerOrderDto.getId());
-        beerOrderOptional.ifPresentOrElse(beerOrder ->
+        beerOrderRepository.findById(beerOrderDto.getId()).ifPresentOrElse(beerOrder ->
         {
             sendBeerOrderEvent(beerOrder, BeerOrderEventEnum.ALLOCATION_SUCCESS);
             updateAllocatedQuantity(beerOrderDto, beerOrder);
@@ -85,8 +86,7 @@ public class BeerOrderManagerImpl implements BeerOrderManager
     @Override
     public void beerOrderPickedUp(UUID id)
     {
-        Optional<BeerOrder> beerOrderOptional = beerOrderRepository.findById(id);
-        beerOrderOptional.ifPresentOrElse(beerOrder ->
+        beerOrderRepository.findById(id).ifPresentOrElse(beerOrder ->
         {
             sendBeerOrderEvent(beerOrder, BeerOrderEventEnum.BEER_ORDER_PICKED_UP);
 
