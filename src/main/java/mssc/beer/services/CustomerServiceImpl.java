@@ -25,9 +25,9 @@ public class CustomerServiceImpl implements CustomerService
     @Override
     public CustomerPagedList listCustomers(Pageable pageable)
     {
-        Page<Customer> customerPage = customerRepository.findAll(pageable);
-        return new CustomerPagedList(customerPage.stream().map(customerMapper::customerToDto).collect(Collectors.toList()),
-                    PageRequest.of(customerPage.getPageable().getPageNumber(), customerPage.getPageable().getPageSize()),
-                    customerPage.getTotalElements());
+        Page<Customer> customersPaged = customerRepository.findAll(pageable);
+        return new CustomerPagedList(customersPaged.stream().map(customerMapper::customerToDto).collect(Collectors.toList()),
+                PageRequest.of(customersPaged.getPageable().getPageNumber(), customersPaged.getPageable().getPageSize()),
+                customersPaged.getTotalElements());
     }
 }
